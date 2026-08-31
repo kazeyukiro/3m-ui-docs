@@ -6,122 +6,131 @@ title: 安装与升级
 ## 环境要求
 
 - Linux（glibc 或 musl / Alpine 均可）
-- root 权限（安装脚本与 systemd 服务）
-- 出站网络（下载 Release、可选 ACME）
-- 建议独立用户数据目录有足够磁盘空间
+- root 权限
+- 出站网络
 
-**不需要** 预装 Go、Node、系统 libsqlite3。官方二进制为 `CGO_ENABLED=0` + modernc SQLite 静态构建。
+不需要预装 Go、Node、系统 libsqlite3。官方二进制为纯 Go 静态构建。
 
-## 一键安装（推荐）
+## 一键安装
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/install.sh | bash
 ```
 
-非交互 + 指定版本：
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/install.sh | bash -s -- v0.1-rc29 -y
-```
-
-常用选项：
-
-| 参数 | 含义 |
-|------|------|
-| `-y` / `--yes` | 非交互安装 |
-| `--no-mihomo` | 不自动安装 Mihomo |
-| `vX.Y.Z` | 指定 Release 标签 |
-
-安装时自定义面板端口（NAT 友好）：
+自定义端口：
 
 ```bash
 PANEL_PORT=8443 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/install.sh | bash
 ```
 
-| 环境变量 | 含义 |
-|----------|------|
-| `PANEL_PORT` / `THREE_M_UI_PORT` | 面板端口，默认 8080 |
-| `PANEL_LISTEN` / `THREE_M_UI_LISTEN` | 监听地址，空=全部网卡 |
-| `PUBLIC_URL` / `THREE_M_UI_PUBLIC_URL` | 公网面板 URL |
+## 安装后
 
-详见 [NAT与面板端口](/nat-port)。
+初始管理员：`admin / admin`，首次登录**强制修改密码**。
 
-## 验证安装包签名（推荐）
+## 端口管理
 
-每个 Release 都经过两层校验：`SHA256SUMS`（完整性，默认强制）+ cosign keyless 签名（真实性，OPT-IN）。详见 [验证Release签名](/verify-release-signature)。
+安装后可通过多种方式修改面板端口：
 
-### 安装时启用 cosign 真实性验证
+### 方式 1：命令行（推荐）
 
 ```bash
-# 先安装 cosign（一次性）
-curl -fsSL -o /usr/local/bin/cosign \
-  https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
-chmod +x /usr/local/bin/cosign
-
-# 启用验证安装
-THREE_M_UI_VERIFY_COSIGN=1 \
-  curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/install.sh | bash
+3m-ui config port 9000
 ```
 
-升级同理：
+自动修改 `config.yaml` 并重启服务，一步到位。
+
+### 方式 2：交互菜单
 
 ```bash
-THREE_M_UI_VERIFY_COSIGN=1 \
-  curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/update.sh | bash
+3m-ui
 ```
 
-不安装 cosign 也没关系：安装器会打印警告并跳过真实性验证，但 `SHA256SUMS` 的完整性校验始终 fail-closed。
+选择 `9. 修改面板端口`，输入新端口。
+
+### 方式 3：面板 UI
+
+在「系统设置 → 面板/NAT」修改端口并保存。修改后需手动重启：
+
+```bash
+systemctl restart 3m-ui
+```
+
+面板会弹出醒目提示告知需要重启。
+
+### 方式 4：环境变量
+
+```bash
+PANEL_PORT=9000 curl ... | bash  # 安装时指定
+```
+
+或修改 systemd 服务的 `Environment` 行。
+
+## 升级
+
+```bash
+3m-ui 2  # 交互菜单选择更新
+```
+
+或：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/update.sh | bash
+```
+
+升级前自动备份（保留最近 5 份），新版本启动失败自动回滚。
+
+## 服务管理
+
+```bash
+3m-ui status    # 查看状态
+3m-ui start     # 启动
+3m-ui restart   # 重启
+3m-ui stop      # 停止
+3m-ui logs      # 查看日志
+3m-ui version   # 查看版本
+3m-ui config show              # 查看配置
+3m-ui config port <端口号>      # 修改端口并重启
+```
+
+## 卸载
+
+```bash
+3m-ui 9  # 选择卸载（交互菜单选 a）
+```
+
+或：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/uninstall.sh | bash
+```
+
+`--purge` 同时删除数据：
+
+```bash
+curl -fsSL ... | bash -s -- --purge --yes
+```
 
 ## 安装布局
 
 | 路径 | 用途 |
 |------|------|
 | `/usr/local/bin/3m-ui` | 命令入口 |
-| `/usr/local/lib/3m-ui/3m-ui-bin` | 实际二进制 |
-| `/etc/3m-ui/config.yaml` | 面板配置 |
+| `/usr/local/lib/3m-ui/` | 二进制 + 管理脚本 |
+| `/etc/3m-ui/config.yaml` | 面板配置（权限 0600） |
 | `/var/lib/3m-ui/` | 数据库、Mihomo 数据 |
 | `/var/log/3m-ui/` | 日志 |
 | systemd 单元 | `3m-ui.service` |
 
-默认监听：**`0.0.0.0:8080`**（可用 `PANEL_PORT`、面板「系统设置 → 面板 / NAT」或 `config.yaml` 修改，见 [NAT与面板端口](/nat-port)）。
-
-## 升级
+## Docker
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/update.sh | bash
-# 或指定版本
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/update.sh | bash -s -- v0.1-rc29
+docker compose up -d
 ```
 
-升级会替换二进制并尽量保留 `/etc/3m-ui` 与 `/var/lib/3m-ui` 数据。
+默认绑定 `127.0.0.1:8080`，需通过反向代理暴露。详见 [Docker 文档](https://github.com/kazeyukiro/3m-ui)。
 
-## 卸载
+容器以非 root 用户（UID 10001）运行。挂载卷需确保该 UID 可读写：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/uninstall.sh | bash
+sudo chown -R 10001:10001 /etc/3m-ui /var/lib/3m-ui /var/log/3m-ui
 ```
-
-请先备份数据库再卸载。
-
-## 服务管理
-
-```bash
-systemctl status 3m-ui
-systemctl restart 3m-ui
-systemctl stop 3m-ui
-journalctl -u 3m-ui -f
-```
-
-## 手动安装要点
-
-1. 从 [Releases](https://github.com/kazeyukiro/3m-ui/releases) 下载对应架构的 `3m-ui-linux-*.tar.gz`
-2. 解压后将二进制放到合适路径并 `chmod +x`
-3. 编写 `config.yaml`（必须修改 JWT 与 credential 密钥，见 [面板配置](/panel-config)）
-4. 准备 Mihomo 可执行文件路径，写入配置
-5. 用 systemd 或其它进程管理器常驻运行
-
-## 首次打开
-
-浏览器访问：`http://<服务器IP>:<端口>`（默认 `8080`，若安装时设置了 `PANEL_PORT` 则使用该端口）。
-
-若安装脚本已创建管理员账号，使用提示中的用户名/密码登录；否则按面板首次初始化流程设置管理员。

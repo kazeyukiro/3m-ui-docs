@@ -3,36 +3,51 @@ id: backup-restore
 title: 备份与恢复
 ---
 
-## 需要备份的数据
+## 下载备份
 
-| 路径 | 内容 |
+在「系统设置 → 备份与恢复」点击「下载备份」。系统生成一个 `.zip` 文件，包含：
+
+| 文件 | 说明 |
 |------|------|
-| SQLite 数据库 | 用户、节点、设置、Token 等 |
-| `config.yaml` | 面板进程配置 |
-| Mihomo 配置与数据目录 | 核心配置、Geo 文件等 |
-| 证书目录 | ACME 缓存或手动证书 |
+| `3m-ui.db` | SQLite 数据库（用户、节点、流量、设置） |
+| `mihomo-config.yaml` | Mihomo 核心配置 |
+| `backup-meta.txt` | 备份元信息（创建时间） |
 
-默认示例：
+## 恢复数据库
 
-- `/var/lib/3m-ui/3m-ui.db`
-- `/etc/3m-ui/config.yaml`
-- `/var/lib/3m-ui/mihomo/`
+在「系统设置 → 备份与恢复」上传之前下载的 `.zip` 文件或裸 `.db` 文件。
 
-## 面板内备份
+### 支持的格式
 
-**系统** API / 界面若提供备份下载，按提示导出。恢复前先停止面板，避免数据库损坏。
+系统自动识别上传文件的格式：
+
+- **ZIP 压缩包**（从面板下载的备份）— 自动解压提取 `3m-ui.db`
+- **裸 SQLite 文件**（手动复制的 `.db`）— 直接使用
+
+### ⚠️ 恢复后必须重启
+
+恢复后**必须重启面板进程**，否则运行中的进程仍写入旧文件句柄，数据会丢失：
 
 ```bash
-systemctl stop 3m-ui
-# 恢复 db 与配置文件
-systemctl start 3m-ui
+systemctl restart 3m-ui
 ```
 
-## Telegram
+面板会在恢复成功后返回 `restart_required: true`，并在日志中打印 `[WARNING]`。
 
-`/backup` 指令会提示备份相关信息；可将定期备份纳入系统 cron。
+### 大小限制
 
-## 建议
+上传文件最大 128 MiB。超出会被拒绝。
 
-- 备份文件加密存放
-- 恢复后立刻轮换 JWT、管理员密码与订阅 token（若备份曾泄露）
+## API
+
+```bash
+# 下载备份
+curl -H "Authorization: Bearer <token>" \
+  https://panel.example.com/api/v1/system/backup \
+  -o 3m-ui-backup.zip
+
+# 恢复数据库
+curl -X POST -H "Authorization: Bearer <token>" \
+  -F "database=@3m-ui-backup.zip" \
+  https://panel.example.com/api/v1/system/backup/restore-db
+```
