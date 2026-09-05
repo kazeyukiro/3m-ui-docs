@@ -72,3 +72,8 @@ https://…/api/v1/client/json/<sub_token>
 - 开启面板 HTTPS → [SSL与证书](/ssl-cert)
 - 配置 Telegram 告警 → [Telegram-Bot](/telegram-bot)
 - 只暴露反代后的域名，防火墙限制 8080
+
+## 6. 配置引擎（可选）
+
+**配置** 页可预览 Mihomo YAML。建议流程：**生成 → 校验 → 应用**；不要把「生成」当成已经上线。失败时用 **回滚**。
+

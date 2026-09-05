@@ -23,103 +23,110 @@ curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/insta
 PANEL_PORT=8443 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/install.sh | bash
 ```
 
+非交互（如 cloud-init）可设置 `THREE_M_UI_NONINTERACTIVE=1`；安装结果会写入 `/etc/3m-ui/install-result.env`（默认账号策略不变）。
+
 ## 安装后
 
 初始管理员：`admin / admin`，首次登录**强制修改密码**。
 
-## 端口管理
+管理入口：
 
-安装后可通过多种方式修改面板端口：
+```bash
+sudo 3m-ui          # 交互菜单
+sudo 3m-ui help     # 子命令列表
+```
+
+## 端口管理
 
 ### 方式 1：命令行（推荐）
 
 ```bash
-3m-ui config port 9000
+sudo 3m-ui config port 9000
 ```
 
-自动修改 `config.yaml` 并重启服务，一步到位。
+自动修改 `config.yaml` 并重启服务。
 
 ### 方式 2：交互菜单
 
 ```bash
-3m-ui
+sudo 3m-ui
 ```
 
-选择 `9. 修改面板端口`，输入新端口。
+选择「修改面板端口」。
 
 ### 方式 3：面板 UI
 
-在「系统设置 → 面板/NAT」修改端口并保存。修改后需手动重启：
+在「系统设置 → 面板 / 外观」修改端口并保存后，需重启服务：
 
 ```bash
-systemctl restart 3m-ui
+sudo 3m-ui restart
+# 或 systemctl restart 3m-ui
 ```
 
-面板会弹出醒目提示告知需要重启。
-
-### 方式 4：环境变量
+### 方式 4：安装时环境变量
 
 ```bash
-PANEL_PORT=9000 curl ... | bash  # 安装时指定
+PANEL_PORT=9000 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/install.sh | bash
 ```
-
-或修改 systemd 服务的 `Environment` 行。
 
 ## 升级
 
-```bash
-3m-ui 2  # 交互菜单选择更新
-```
-
-或：
+**推荐**（v1.0.0 起入口脚本已支持）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/update.sh | bash
+sudo 3m-ui update
+# 指定版本：
+sudo 3m-ui update v1.0.0
 ```
 
-升级前自动备份（保留最近 5 份），新版本启动失败自动回滚。
+若本机仍是旧入口脚本（`未知命令: update`），可先用：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/update.sh | sudo bash
+```
+
+之后即可使用 `sudo 3m-ui update`。
+
+也可在交互菜单中选择「更新 3m-ui」。
+
+升级前会自动备份（默认保留最近 5 份）；新版本启动失败会尝试回滚。
 
 ## 服务管理
 
 ```bash
-3m-ui status    # 查看状态
-3m-ui start     # 启动
-3m-ui restart   # 重启
-3m-ui stop      # 停止
-3m-ui logs      # 查看日志
-3m-ui version   # 查看版本
-3m-ui config show              # 查看配置
-3m-ui config port <端口号>      # 修改端口并重启
+sudo 3m-ui status
+sudo 3m-ui start
+sudo 3m-ui restart
+sudo 3m-ui stop
+sudo 3m-ui logs
+sudo 3m-ui version
+sudo 3m-ui config show
+sudo 3m-ui config port <端口>
+sudo 3m-ui install      # 安装 / 修复
+sudo 3m-ui uninstall    # 卸载
 ```
 
 ## 卸载
 
 ```bash
-3m-ui 9  # 选择卸载（交互菜单选 a）
+sudo 3m-ui uninstall
+# 或交互菜单选择「卸载」
 ```
 
-或：
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/uninstall.sh | bash
-```
-
-`--purge` 同时删除数据：
-
-```bash
-curl -fsSL ... | bash -s -- --purge --yes
-```
+彻底清理数据请使用官方 `uninstall.sh` 的 purge 选项（见脚本 `--help`）。
 
 ## 安装布局
 
 | 路径 | 用途 |
 |------|------|
 | `/usr/local/bin/3m-ui` | 命令入口 |
-| `/usr/local/lib/3m-ui/` | 二进制 + 管理脚本 |
+| `/usr/local/lib/3m-ui/` | 面板二进制 + 管理脚本 |
 | `/etc/3m-ui/config.yaml` | 面板配置（权限 0600） |
-| `/var/lib/3m-ui/` | 数据库、Mihomo 数据 |
+| `/var/lib/3m-ui/3m-ui.db` | SQLite 数据库 |
+| `/var/lib/3m-ui/listener-certs/` | 节点自签证书（**请与数据库一并备份**） |
+| `/var/lib/3m-ui/mihomo/` | Mihomo 数据与配置 |
 | `/var/log/3m-ui/` | 日志 |
-| systemd 单元 | `3m-ui.service` |
+| systemd / OpenRC | `3m-ui` 服务 |
 
 ## Docker
 
@@ -127,10 +134,4 @@ curl -fsSL ... | bash -s -- --purge --yes
 docker compose up -d
 ```
 
-默认绑定 `127.0.0.1:8080`，需通过反向代理暴露。详见 [Docker 文档](https://github.com/kazeyukiro/3m-ui)。
-
-容器以非 root 用户（UID 10001）运行。挂载卷需确保该 UID 可读写：
-
-```bash
-sudo chown -R 10001:10001 /etc/3m-ui /var/lib/3m-ui /var/log/3m-ui
-```
+默认绑定与卷权限以主仓库 `docker-compose.yml` 为准。挂载目录需保证容器运行用户可读写。
