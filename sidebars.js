@@ -9,34 +9,19 @@ const sidebars = {
     {
       type: 'category',
       label: '面板使用',
-      items: [
-        'panel-config',
-        'nat-port',
-        'listeners',
-        'users-traffic',
-        'subscription',
-        'core',
-        'share',
-      ],
+      items: ['panel-config', 'nat-port', 'listeners', 'users-traffic', 'subscription', 'core', 'share'],
     },
   ],
   ops: [
     {
       type: 'category',
       label: '运维',
-      items: [
-        'cluster',
-        'telegram-bot',
-        'ssl-cert',
-        'system-settings',
-        'backup-restore',
-        'security',
-        'verify-release-signature',
-        'troubleshoot',
-      ],
+      items: ['cluster', 'telegram-bot', 'ssl-cert', 'system-settings', 'backup-restore', 'security', 'verify-release-signature', 'troubleshoot'],
     },
   ],
-  api: ['api-auth'],
+  api: [
+    'api-auth',
+  ],
 };
 
 module.exports = sidebars;

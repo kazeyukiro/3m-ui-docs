@@ -3,16 +3,42 @@ id: system-settings
 title: 系统设置
 ---
 
-侧栏进 **系统设置**，一般是分组的，例如：
+面板 **系统设置** 聚合运营向配置（多数存数据库，不必改 `config.yaml`）。
 
-- 面板 / 外观（端口、标题一类）
-- 访问档案（Public Host 等默认值）
-- Telegram
-- 安全与备份
-- 订阅页模板
-- 证书 / 面板 SSL
-- 反代与 Geo
-- 流量重置
-- 关于
+## 面板 / NAT（端口与公网 URL）
 
-改完该保存的保存；涉及监听端口或 SSL 的，按提示重启服务。具体字段以当前版本界面为准。
+- **面板端口**、**监听地址**、**面板公网 URL**
+- 写入 `/etc/3m-ui/config.yaml` 的 `server.port` / `listen` / `public_url`
+- **修改端口或监听后必须重启** `3m-ui` 服务
+
+环境变量与 API 说明见 [NAT与面板端口](/nat-port)。
+
+## 语言与主题
+
+界面中英文切换、主题相关选项。
+
+## Telegram
+
+见 [Telegram-Bot](/telegram-bot)。
+
+## 订阅页模板
+
+- 主题目录、页面标题、支持链接
+- 公告、Profile 网页 URL
+- 刷新间隔（小时）
+- 是否 Base64 编码 URI 列表
+- 下载默认 HTML 模板
+
+见 [订阅](/subscription)。
+
+## GeoIP / GeoSite
+
+一键下载 MetaCubeX 数据库到 Mihomo 数据目录，供路由规则使用。
+
+## 流量重置
+
+可配置每月重置日等策略（若版本已启用对应开关）。
+
+## 模板
+
+TLS / 反代配置片段生成，便于复制到 Nginx、Caddy 等。

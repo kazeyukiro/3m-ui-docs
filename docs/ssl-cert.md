@@ -1,10 +1,30 @@
 ---
 id: ssl-cert
-title: 面板 SSL
+title: SSL 与证书
 ---
 
-这里说的是 **面板自己的 HTTPS**，不是节点入站证书。
+## 面板 HTTPS（ACME）
 
-系统设置里可以配 Let’s Encrypt（autocert）或手动证书路径。保存后一般要重启面板才生效。
+**系统设置 → 面板 SSL**：
 
-节点 TLS / 自签见 [节点管理](/listeners)。反代终止 TLS 时，节点侧可能用 `allow-insecure` 一类选项，和面板 HTTPS 不是一回事。
+- 使用 Let’s Encrypt（autocert）或手动证书
+- 配置域名、缓存目录、可选手动 cert/key 路径
+- **保存后需要重启面板进程** 才能生效
+
+HTTP-01 需要 80 端口可达（或按你的部署方式完成校验）。
+
+## 节点 TLS
+
+Listener 上可填写证书路径，或在反代（Nginx / Caddy）上终止 TLS，后端只跑明文端口。
+
+**系统设置** 中可有证书申请向导（生成 certbot 命令示例），在服务器上执行后把路径填回 Listener。
+
+## 订阅与反代
+
+推荐：
+
+```text
+客户端 ──HTTPS──► 反代 ──► 面板 :8080
+```
+
+订阅 URL 使用对外域名；节点 **Public Host** 填客户端应连接的域名或 IP。

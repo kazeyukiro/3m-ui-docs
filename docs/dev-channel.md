@@ -3,40 +3,41 @@ id: dev-channel
 title: 开发通道（test）
 ---
 
-正式环境请用 **main** 和正式 Release。下面说的是给开发、试新功能用的 **test** 分支。
+本文说明 **test** 分支与 **Pre-release** 的用途。生产环境请使用 `main` 分支及正式 Release。
 
-## 和正式版差在哪
+## 正式通道与开发通道
 
-| | 正式（main） | 开发（test） |
-|--|--|--|
-| 代码 | [main](https://github.com/kazeyukiro/3m-ui/tree/main) | [test](https://github.com/kazeyukiro/3m-ui/tree/test) |
-| Release | 普通 Release，会更新 GitHub `latest` | **Pre-release**，不抢 `latest` |
-| 装/更脚本 | 跟最新正式版 | 优先最新 Pre-release |
-| 稳定性 | 发版前会压一轮 | 可能随时炸，别上生产 |
+| 项目 | 正式（main） | 开发（test） |
+|------|----------------|----------------|
+| 代码分支 | [main](https://github.com/kazeyukiro/3m-ui/tree/main) | [test](https://github.com/kazeyukiro/3m-ui/tree/test) |
+| 发布形态 | 正式 GitHub Release（更新 `latest`） | **Pre-release**（`prerelease: true`，不覆盖 `latest`） |
+| 安装 / 升级脚本 | 跟随最新正式版本 | 优先选择最新 Pre-release |
+| 适用场景 | 生产与日常使用 | 功能验证与开发联调 |
 
-推送到 `test` 时，Actions 会打类似 `test-<序号>-<短 sha>` 的预发布包。
+向 `test` 分支推送代码时，持续集成将自动构建并发布 Pre-release，版本标签形如 `test-<序号>-<短提交哈希>`。
 
-## 怎么装预发布
+## 安装 Pre-release
 
-脚本必须从 **test 分支** 拉，main 上的脚本不会去装 Pre-release：
+须使用 **test** 分支上的安装脚本；`main` 分支脚本不会默认安装预发布版本：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash
 ```
 
-指定某一个预发布 tag：
+指定某一预发布标签：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash -s -- test-12-abcdef0
 ```
 
-装过之后，如果入口脚本也是 test 通道带下来的，直接：
+若本机管理入口脚本已随 test 通道安装，可执行：
 
 ```bash
 sudo 3m-ui update
 ```
 
-## 注意
+## 注意事项
 
-- 数据目录和正式版一样（`/var/lib/3m-ui` 等）。切回正式版前先备份，尤其是 `3m-ui.db` 和 `listener-certs/`。
-- 预发布坏了，用 [安装与升级](/install) 里的正式脚本重装/降级即可。
+1. Pre-release 可能包含未充分验证的变更，**不建议用于生产环境**。
+2. 数据目录与正式版相同。在切换回正式版本前，请备份数据库与 `listener-certs/` 等目录，参见 [备份与恢复](/backup-restore)。
+3. 正式环境的安装与升级步骤见 [安装与升级](/install)。

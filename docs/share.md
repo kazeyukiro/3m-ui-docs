@@ -1,13 +1,31 @@
 ---
 id: share
-title: 分享 / URI
+title: 分享与订阅
 ---
 
-**分享** 页（或用户详情里）可以：
+3M-UI 支持为每个代理用户生成订阅链接和节点分享 URI，方便客户端一键导入。
 
-1. 看某个用户的订阅链接  
-2. 看已绑定节点的单条分享 URI（方便扫码或手动导入）
+## 订阅链接
 
-URI 按协议拼，字段来自节点配置和用户凭据。对不上客户端时，优先核对 Public Host、端口、TLS/Reality 和 skip 是否和服务器一致。
+每个代理用户在「用户管理」中创建后会自动生成唯一的订阅 Token。典型地址格式：
 
-订阅更适合长期用；URI 适合排障或只发一个节点。
+```
+/api/v1/client/sub/<token>
+```
+
+支持的订阅格式：
+
+| 参数 | 格式 | 适用客户端 |
+|------|------|-----------|
+| 默认 | Clash / Mihomo YAML | Clash 系列、Mihomo |
+| `?target=v2ray` | V2Ray Base64 | v2rayN、Hiddify |
+| `?target=singbox` | Sing-box JSON | sing-box |
+| `?target=clash` | Clash YAML | Clash 系列 |
+
+## 节点分享 URI
+
+在「节点管理」列表中，点击节点的「复制订阅链接」按钮可获取该节点的分享 URI。支持多用户批量导出。
+
+## 安全提示
+
+订阅 Token 等同于密码，泄露后应立即在用户管理中轮换或删除。

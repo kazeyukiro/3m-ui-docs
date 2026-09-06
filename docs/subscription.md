@@ -3,37 +3,60 @@ id: subscription
 title: 订阅
 ---
 
-## 链接长什么样
+订阅是一个 URL，客户端定期拉取即可同步节点与流量信息。
 
-大致是：
+## URL 形式
 
-```text
-http(s)://面板地址/api/v1/client/sub/<token>
-```
-
-用浏览器打开且 Accept 偏向 HTML 时，可能看到订阅说明页；Clash / 部分客户端则直接拿配置。
-
-## 格式
-
-不带参数时，多半按 User-Agent 猜：
-
-- Clash / Mihomo → YAML
-- 部分 v2ray 系 → Base64 URI 列表
-- sing-box → JSON
-
-也可以强制：
+主路径（推荐）：
 
 ```text
-?target=clash
-?target=v2ray
-?target=singbox
-?target=html
+/api/v1/client/sub/<sub_token>
 ```
 
-响应头里常有 `Subscription-Userinfo`（流量、到期），客户端认的话会显示。
+按格式分流：
 
-## 注意
+```text
+/api/v1/client/v2ray/<sub_token>   # Base64 / 明文 URI 列表
+/api/v1/client/clash/<sub_token>   # Clash / Mihomo YAML
+/api/v1/client/json/<sub_token>    # Sing-box JSON
+```
 
-- token 当密码看，不要贴到公开地方
-- 改了节点或用户绑定，让客户端更新/重拉订阅
-- 自签 TLS 的节点，导出里一般会带跳过证书校验；换了证书要重新拉一次
+兼容遗留短路径：`/sub/<token>`、`/clash/<token>`、`/json/<token>`。
+
+也可用查询参数：
+
+```text
+?target=mihomo|clash|v2ray|singbox
+?html=1          # 强制 HTML 信息页
+?format=info     # JSON 元数据
+?encrypt=0|1     # V2Ray 列表是否 Base64
+```
+
+## 客户端自动识别
+
+未指定 `target` 时，会根据 `User-Agent` 猜测（Clash / Sing-box / v2rayNG 等）。
+
+## 响应头
+
+| 头 | 含义 |
+|----|------|
+| `Subscription-Userinfo` | upload / download / total / expire |
+| `Profile-Update-Interval` | 建议刷新小时数 |
+| `Profile-Title` | 标题（常为 base64:…） |
+| `Support-Url` | 支持链接 |
+| `Announce` | 公告 |
+| `Profile-Web-Page-Url` | 信息页 URL |
+
+以上可在 **系统设置 → 订阅页** 中配置默认标题、支持链接、公告、网页 URL、刷新间隔、是否 Base64 加密 URI 列表。
+
+## HTML 订阅页
+
+浏览器以 `Accept: text/html` 访问或加 `?html=1` 时，返回可读信息页。
+
+可自定义主题目录（`index.html` / `sub.html`），变量包括用户名、流量、到期、各格式订阅链接等。设置中可下载默认模板。
+
+## 安全提示
+
+- `sub_token` 等同于密码，勿提交到公开仓库
+- 生产环境务必 HTTPS
+- 用户禁用/到期/超流量后订阅应失败，属预期行为
