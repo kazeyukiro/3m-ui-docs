@@ -91,6 +91,37 @@ curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/updat
 
 升级前会自动备份（默认保留最近 5 份）；新版本启动失败会尝试回滚。
 
+
+## 开发通道（test / Pre-release）
+
+正式用户请始终使用 **`main`** 与 [正式 Release](https://github.com/kazeyukiro/3m-ui/releases)（`/releases/latest`）。
+
+开发 / 尝鲜可使用 **`test` 分支**：
+
+| 项 | 说明 |
+|------|------|
+| 代码分支 | [`test`](https://github.com/kazeyukiro/3m-ui/tree/test) |
+| CI | 推送到 `test` 会打 **Pre-release**（`prerelease: true`，**不会**覆盖正式 `latest`） |
+| 版本号示例 | `test-<run>-<sha>` 或手动 `v*-test.*` |
+| 安装脚本 | **必须从 test 分支拉取**，才会默认选最新预发布 |
+
+```bash
+# 安装最新 Pre-release（test 通道脚本）
+curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash
+
+# 指定某个预发布 tag
+curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash -s -- test-12-abc1234
+
+# 已用 test 通道脚本装过时，更新仍跟预发布
+sudo 3m-ui update
+```
+
+注意：
+
+1. 从 **`main`** 拉的 `install.sh` / `update.sh` **不会**自动装 Pre-release。
+2. Pre-release 可能不稳定，勿用于生产。
+3. 预发布与正式版数据目录相同；回退正式版前请先备份（含 `listener-certs/`）。
+
 ## 服务管理
 
 ```bash
