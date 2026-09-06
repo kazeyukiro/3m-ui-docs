@@ -3,62 +3,18 @@ id: panel-config
 title: 面板配置
 ---
 
-主配置文件：`/etc/3m-ui/config.yaml`（安装脚本默认路径）。
+主配置文件一般是：
 
-修改后需 **重启面板进程**（`systemctl restart 3m-ui`）。
-
-## 示例结构
-
-```yaml
-server:
-  port: 8080
-  # listen: ""            # 空 / 0.0.0.0 / :: → 双栈友好；NAT 反代可写 127.0.0.1
-  # public_url: "https://panel.example.com:8443"  # 订阅/外链用公网地址
-  mode: release
-
-database:
-  path: /var/lib/3m-ui/3m-ui.db
-
-jwt:
-  secret: "请换成足够长的随机串"
-
-security:
-  credential_key: "请换成足够长的随机串"
-
-mihomo:
-  binary: /usr/local/bin/mihomo
-  config: /var/lib/3m-ui/mihomo/config.yaml
-  # 其它工作目录等按实际版本字段填写
+```text
+/etc/3m-ui/config.yaml
 ```
 
-## 必改项
+常见项：监听端口、`public_url`（订阅外链用）、数据库路径、JWT / 凭据加密密钥、Mihomo 二进制与配置路径、CORS 等。
 
-| 字段 | 说明 |
-|------|------|
-| `jwt.secret` | JWT 签名密钥，**禁止**使用文档/默认占位符 |
-| `security.credential_key` | 用户凭据加密密钥，同样必须唯一 |
+密钥用长随机串，别抄文档示例。改端口也可以：
 
-安装脚本一般会自动生成随机值。手动安装时务必自建。
+```bash
+sudo 3m-ui config port <端口>
+```
 
-## 监听、公网 URL 与 IPv6
-
-- `server.port`：面板端口（也可用环境变量 `PANEL_PORT` / `THREE_M_UI_PORT`）
-- `server.listen`：绑定地址；留空或 `0.0.0.0` / `::` 便于双栈；仅反代时用 `127.0.0.1`
-- `server.public_url`：NAT 后的面板完整 URL，供订阅与外链解析
-- 节点侧的 **Public Host** 支持 IPv6 字面量，分享链接会正确加方括号
-
-家宽 / 端口映射详见 [NAT与面板端口](/nat-port)。
-
-## 数据库
-
-默认 SQLite。定期备份 `database.path` 指向的文件，见 [备份与恢复](/backup-restore)。
-
-## 与 Web「系统设置」的关系
-
-`config.yaml` 控制进程级参数；面板内 **系统设置** 还包含：
-
-- 语言 / 主题
-- Telegram、订阅页模板、Geo 文件
-- 面板 SSL（ACME）等（多存于数据库 `panel_settings`）
-
-二者职责不同，不要混淆。
+更多 UI 里的开关见 [系统设置](/system-settings)。

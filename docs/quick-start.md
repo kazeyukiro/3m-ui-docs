@@ -3,77 +3,36 @@ id: quick-start
 title: 快速开始
 ---
 
-按下面顺序即可跑通「节点 + 用户 + 订阅」。
+按顺序走一遍：装好 → 起核心 → 建节点 → 建用户 → 拿订阅。
 
 ## 1. 安装并登录
 
-见 [安装与升级](/install)。使用管理员账号登录面板。
+见 [安装与升级](/install)。默认账号 `admin` / `admin`，**第一次登录会逼你改密码**。
 
-## 2. 确认 Mihomo 可用
+## 2. 确认 Mihomo 在跑
 
-进入 **核心管理**：
+打开 **核心管理**，看二进制路径对不对，点启动或重启。不行就翻 **运行日志**，或：
 
-1. 确认 Mihomo 二进制路径正确（安装脚本通常已配置）
-2. 点击 **启动** 或 **重启**
-3. 状态应显示运行中
-
-若启动失败，查看 **运行日志** 与 `journalctl -u 3m-ui -f`。
-
-## 3. 创建 Listener（节点）
-
-进入 **节点管理** → 新建：
-
-- 协议：如 VLESS / VMess / Trojan / Hysteria2 等
-- 端口、绑定地址（IPv4 `0.0.0.0`、IPv6 `::` 或双栈相关设置）
-- TLS / REALITY 等安全选项按需填写
-- **Public Host / Public Port**（可选）：生成分享链接与订阅时对外展示的地址
-
-保存后，面板会生成/更新 Mihomo 配置并尝试应用。
-
-## 4. 创建用户
-
-进入 **用户管理** → 新建：
-
-- 用户名、备注
-- 流量上限（0 表示不限）
-- 到期时间（空表示不限）
-- IP 限制（可选）
-- 绑定到一个或多个 Listener
-
-保存后会生成 `sub_token` 与客户端凭据。
-
-## 5. 获取订阅
-
-在用户行打开分享 / 订阅：
-
-| 类型 | 说明 |
-|------|------|
-| Mihomo / Clash | YAML 配置，适合 Clash Meta / Mihomo 客户端 |
-| V2Ray | Base64 节点列表（可用 `?encrypt=0` 要明文） |
-| Sing-box | JSON |
-| HTML | 浏览器打开的信息页 |
-
-订阅 URL 形态示例：
-
-```text
-https://你的面板或域名/api/v1/client/sub/<sub_token>
-https://…/api/v1/client/v2ray/<sub_token>
-https://…/api/v1/client/clash/<sub_token>
-https://…/api/v1/client/json/<sub_token>
+```bash
+journalctl -u 3m-ui -f
 ```
 
-兼容短路径：`/sub/<token>`、`/clash/<token>`、`/json/<token>`。
+## 3. 建节点（Listener）
 
-详情见 [订阅](/subscription)。
+**节点管理** → 新建。选好协议和端口，TLS / Reality 按需要填。
 
-## 6. （可选）加固
+**Public Host / Public Port** 是给订阅和分享链接用的对外地址（过 CDN、多 IP、IPv6 时有用）。
 
-- 修改默认端口与 JWT / 凭据密钥 → [面板配置](/panel-config)
-- 开启面板 HTTPS → [SSL与证书](/ssl-cert)
-- 配置 Telegram 告警 → [Telegram-Bot](/telegram-bot)
-- 只暴露反代后的域名，防火墙限制 8080
+保存后面板会改 Mihomo 配置并尝试生效；失败一般会回滚，避免把核心配置写烂。
 
-## 6. 配置引擎（可选）
+## 4. 建用户
 
-**配置** 页可预览 Mihomo YAML。建议流程：**生成 → 校验 → 应用**；不要把「生成」当成已经上线。失败时用 **回滚**。
+**用户管理** → 新建：限速/限量、到期时间、绑定哪些节点。UUID / 密码可以空着让面板生成。
 
+## 5. 订阅和分享
+
+用户详情或 **分享** 页能看到订阅 URL 和单节点 URI。客户端用订阅更省事；调试单个节点再用 URI。说明见 [订阅](/subscription)、[分享](/share)。
+
+## 配置引擎（可选）
+
+**配置** 页能预览 YAML。比较稳妥的顺序是：**生成 → 校验 → 应用**。「生成」只是预览，不等于已经上线；出事用回滚。
