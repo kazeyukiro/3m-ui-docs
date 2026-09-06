@@ -14,7 +14,7 @@ title: 开发通道（test）
 | 安装 / 升级脚本 | 跟随最新正式版本 | 优先选择最新 Pre-release |
 | 适用场景 | 生产与日常使用 | 功能验证与开发联调 |
 
-向 `test` 分支推送代码时，持续集成将自动构建并发布 Pre-release，版本标签形如 `test-<序号>-<短提交哈希>`。
+向 `test` 分支推送代码时，持续集成将自动构建并发布 Pre-release，版本标签形如 `固定标签 `pre`（滚动覆盖，不新建多个 Pre-release）`。
 
 ## 安装 Pre-release
 
@@ -27,7 +27,7 @@ curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/insta
 指定某一预发布标签：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash -s -- test-12-abcdef0
+curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash -s -- pre
 ```
 
 若本机管理入口脚本已随 test 通道安装，可执行：
