@@ -92,9 +92,9 @@ curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/updat
 升级前会自动备份（默认保留最近 5 份）；新版本启动失败会尝试回滚。
 
 
-## 开发通道
+## 测试通道
 
-功能验证与预发布安装见 [开发通道（test）](/dev-channel)。
+预发布（标签 `pre`）安装与通道切换见 [测试通道（Pre-release）](/dev-channel)。
 
 
 ## 服务管理

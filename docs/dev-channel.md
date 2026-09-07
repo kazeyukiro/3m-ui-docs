@@ -1,43 +1,56 @@
 ---
 id: dev-channel
-title: 开发通道（test）
+title: 测试通道（Pre-release）
 ---
 
-本文说明 **test** 分支与 **Pre-release** 的用途。生产环境请使用 `main` 分支及正式 Release。
+本文说明 **滚动 Pre-release**（固定标签 `pre`）的用途与安装方式。生产环境请使用正式 Release（`v*` 标签，例如 `v1.0.1`）。
 
-## 正式通道与开发通道
+## 正式版与测试版
 
-| 项目 | 正式（main） | 开发（test） |
-|------|----------------|----------------|
-| 代码分支 | [main](https://github.com/kazeyukiro/3m-ui/tree/main) | [test](https://github.com/kazeyukiro/3m-ui/tree/test) |
-| 发布形态 | 正式 GitHub Release（更新 `latest`） | **Pre-release**（`prerelease: true`，不覆盖 `latest`） |
-| 安装 / 升级脚本 | 跟随最新正式版本 | 优先选择最新 Pre-release |
-| 适用场景 | 生产与日常使用 | 功能验证与开发联调 |
+| 项目 | 正式版 | 测试版 |
+|------|--------|--------|
+| 发布方式 | 推送 `v*` 标签，或由 Release 工作流发布 | GitHub Actions 手动运行 **Pre-release · rolling (pre)** |
+| 标签 | `v1.0.1` 等 | 固定 `pre`（每次覆盖同一 Pre-release） |
+| `latest` | 会更新 | 不会覆盖 `latest` |
+| 适用场景 | 生产与日常使用 | 功能验证 |
 
-向 `test` 分支推送代码时，持续集成将自动构建并发布 Pre-release，版本标签形如 `固定标签 `pre`（滚动覆盖，不新建多个 Pre-release）`。
+`test` 代码分支已弃用；预发布仅通过上述 Actions 从 `main` 构建。
 
-## 安装 Pre-release
+## 安装 / 切换到测试版
 
-须使用 **test** 分支上的安装脚本；`main` 分支脚本不会默认安装预发布版本：
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash
-```
-
-指定某一预发布标签：
+使用 `main` 上的脚本，并指定测试通道：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/test/scripts/install.sh | sudo bash -s -- pre
+curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/install.sh | sudo bash -s -- --pre
 ```
 
-若本机管理入口脚本已随 test 通道安装，可执行：
+已安装时：
 
 ```bash
-sudo 3m-ui update
+3m-ui channel pre
+# 或
+3m-ui update --pre
 ```
 
-## 注意事项
+## 切回正式版
 
-1. Pre-release 可能包含未充分验证的变更，**不建议用于生产环境**。
-2. 数据目录与正式版相同。在切换回正式版本前，请备份数据库与 `listener-certs/` 等目录，参见 [备份与恢复](/backup-restore)。
-3. 正式环境的安装与升级步骤见 [安装与升级](/install)。
+```bash
+3m-ui channel stable
+# 或
+3m-ui update --stable
+# 或指定版本
+3m-ui update v1.0.1
+```
+
+当前通道保存在 `/usr/local/lib/3m-ui/CHANNEL`。
+
+## 维护者：发布 Pre-release
+
+1. 打开仓库 **Actions** → **Pre-release · rolling (pre)**
+2. **Run workflow**（可选填写说明）
+3. 成功后，资产位于 [Releases](https://github.com/kazeyukiro/3m-ui/releases) 中标签为 `pre` 的 Pre-release
+
+## 说明
+
+- 测试版可能包含未充分验证的功能，请勿默认用于生产。
+- 正式版与测试版可随时通过通道参数互相切换，无需重装系统依赖。
