@@ -11,7 +11,7 @@ title: 安全建议
 
 ## 管理员密码
 
-4. 初始管理员为 `admin / admin`，首次登录**强制修改密码**（`MustChangePassword`）。仅 `/auth/password` 和 `/auth/me` 接口在未改密前可访问。
+4. 初始管理员用户名一般为 `admin`，安装时打印一次性随机密码；首次登录**强制修改密码**（`MustChangePassword`）。仅 `/auth/password` 和 `/auth/me` 在未改密前可访问。遗失密码执行 `sudo 3m-ui reset-admin`。
 5. 改密接口有速率限制（3 次 / 15 分钟 / IP），防止暴力枚举 `current_password`。
 6. 密码修改后 `SessionVersion` 递增，所有已签发的 JWT 立即失效。
 

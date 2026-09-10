@@ -27,7 +27,7 @@ PANEL_PORT=8443 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/ma
 
 ## 安装后
 
-初始管理员：`admin / admin`，首次登录**强制修改密码**。
+初始管理员用户名一般为 `admin`，安装时会打印**一次性随机密码**；首次登录**强制修改密码**。遗失可用 `sudo 3m-ui reset-admin`。
 
 管理入口：
 
@@ -76,7 +76,7 @@ PANEL_PORT=9000 curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/ma
 ```bash
 sudo 3m-ui update
 # 指定版本：
-sudo 3m-ui update v1.0.0
+sudo 3m-ui update v1.0.6
 ```
 
 若本机仍是旧入口脚本（`未知命令: update`），可先用：

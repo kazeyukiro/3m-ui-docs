@@ -3,14 +3,14 @@ id: dev-channel
 title: 测试通道（Pre-release）
 ---
 
-本文说明 **滚动 Pre-release**（固定标签 `pre`）的用途与安装方式。生产环境请使用正式 Release（`v*` 标签，例如 `v1.0.1`）。
+本文说明 **滚动 Pre-release**（固定标签 `pre`）的用途与安装方式。生产环境请使用正式 Release（`v*` 标签，例如 `v1.0.6`）。
 
 ## 正式版与测试版
 
 | 项目 | 正式版 | 测试版 |
 |------|--------|--------|
 | 发布方式 | 推送 `v*` 标签，或由 Release 工作流发布 | GitHub Actions 手动运行 **Pre-release · rolling (pre)** |
-| 标签 | `v1.0.1` 等 | 固定 `pre`（每次覆盖同一 Pre-release） |
+| 标签 | `v1.0.6` 等 | 固定 `pre`（每次覆盖同一 Pre-release） |
 | `latest` | 会更新 | 不会覆盖 `latest` |
 | 适用场景 | 生产与日常使用 | 功能验证 |
 
@@ -37,9 +37,9 @@ curl -fsSL https://raw.githubusercontent.com/kazeyukiro/3m-ui/main/scripts/insta
 ```bash
 3m-ui channel stable
 # 或
-3m-ui update --stable
+3m-ui update
 # 或指定版本
-3m-ui update v1.0.1
+3m-ui update v1.0.6
 ```
 
 当前通道保存在 `/usr/local/lib/3m-ui/CHANNEL`。
