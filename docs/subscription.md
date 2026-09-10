@@ -108,3 +108,8 @@ title: 订阅
 - `sub_token` 等同于密码，勿提交到公开仓库
 - 生产环境务必 HTTPS
 - 用户禁用/到期/超流量后订阅应失败，属预期行为
+
+
+## 独立路径与端口
+
+可在 `/etc/3m-ui/config.yaml` 设置 `server.sub_path`、`server.sub_port`（及环境变量 `THREE_M_UI_SUB_PATH` / `THREE_M_UI_SUB_PORT`）。生成链接走 `public_url` + 配置的路径前缀；原有 `/api/v1/client/sub/{token}` 始终可用。
