@@ -62,3 +62,8 @@ mihomo:
 - 面板 SSL（ACME）等（多存于数据库 `panel_settings`）
 
 二者职责不同，不要混淆。
+
+## 面板路径前缀
+
+可选字段 `server.web_path`（例如 `/admin-x7`）：管理 UI 与受保护 API 挂在此前缀下。修改后重启服务，用 `https://域名/admin-x7/` 访问。详见 [安全建议](/security)。
+

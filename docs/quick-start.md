@@ -70,8 +70,10 @@ https://…/api/v1/client/json/<sub_token>
 
 - 修改默认端口与 JWT / 凭据密钥 → [面板配置](/panel-config)
 - 开启面板 HTTPS → [SSL与证书](/ssl-cert)
+- 开启管理员 **TOTP 两步验证**、可选 **web_path** 路径前缀 → [安全建议](/security)
 - 配置 Telegram 告警 → [Telegram-Bot](/telegram-bot)
 - 只暴露反代后的域名，防火墙限制 8080
+- 用户侧可配置 HWID 上限、首次使用起算、周期续期 → [用户与流量](/users-traffic)
 
 ## 6. 配置引擎（可选）
 

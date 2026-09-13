@@ -113,3 +113,12 @@ title: 订阅
 ## 独立路径与端口
 
 可在 `/etc/3m-ui/config.yaml` 设置 `server.sub_path`、`server.sub_port`（及环境变量 `THREE_M_UI_SUB_PATH` / `THREE_M_UI_SUB_PORT`）。生成链接走 `public_url` + 配置的路径前缀；原有 `/api/v1/client/sub/{token}` 始终可用。
+
+## 外部订阅合并
+
+用户编辑中可填写 **外部订阅链接**（每行一个 Clash/Mihomo YAML URL）。拉取该用户订阅时，面板会合并这些外链中的代理，再与已绑定的本地面板节点一起下发。外链拉取失败时跳过该源，不影响本地节点。
+
+## 国内外基础分流
+
+默认客户端 YAML（Mihomo）会带上基础的 GEOIP/GEOSITE 分流与 PROXY / AUTO / DIRECT 策略组，便于开箱使用；复杂规则仍可在路由页或客户端侧覆盖。
+
