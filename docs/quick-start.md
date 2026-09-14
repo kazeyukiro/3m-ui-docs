@@ -21,14 +21,12 @@ title: 快速开始
 
 ## 3. 创建 Listener（节点）
 
-进入 **节点管理** → 新建：
+进入 **节点管理**：
 
-- 协议：如 VLESS / VMess / Trojan / Hysteria2 等
-- 端口、绑定地址（IPv4 `0.0.0.0`、IPv6 `::` 或双栈相关设置）
-- TLS / REALITY 等安全选项按需填写
-- **Public Host / Public Port**（可选）：生成分享链接与订阅时对外展示的地址
+- **一键创建（推荐）**：只选协议 + 名称，端口与凭证自动生成（VLESS 等默认 REALITY）
+- **完整创建**：可自选端口、绑定地址、TLS/REALITY、Public Host/Port 等
 
-保存后，面板会生成/更新 Mihomo 配置并尝试应用。
+保存后面板会生成/更新 Mihomo 配置并应用。详见 [节点管理](/listeners)。
 
 ## 4. 创建用户
 

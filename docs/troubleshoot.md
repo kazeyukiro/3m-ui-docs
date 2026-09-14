@@ -126,3 +126,30 @@ curl -X POST https://remote-panel.com/api/v1/auth/login \
 ### 远程健康检查超时
 
 多个远程服务器会**并行**健康检查。如果某个服务器网络不稳定，可能需要增加超时时间或检查网络连接。
+
+
+## 创建/删除节点或重启内核后出现「Cannot reach the panel API」
+
+这通常**不是**面板进程已挂死，而是：
+
+1. 保存节点 / 用户时会 **生成配置并重载 Mihomo**，请求耗时较长
+2. **重启内核** 时 Mihomo 短暂离线（约数秒），页面上其它请求可能失败
+3. 浏览器把「无 HTTP 响应」统一显示为无法连接 `/api/v1`
+
+**请先：**
+
+1. 等待 3–5 秒，**刷新**节点/用户列表（变更往往已保存成功）
+2. 确认服务：
+
+```bash
+sudo systemctl status 3m-ui
+sudo 3m-ui status
+```
+
+3. 若服务 `active` 且列表已有新数据 → 可忽略该红字
+4. 若服务 failed → 查看 `sudo 3m-ui logs` / `journalctl -u 3m-ui -e`
+
+## 节点名称 already exists / 删除 not found
+
+- **already exists**：名称已被占用（含刚才已创建成功、或连点创建）。刷新列表；一键创建/完整创建在新版本会自动换名重试。
+- **listener N not found (already deleted?)**：该 id 已删除，重复点删除触发。新版本删除幂等，刷新即可。

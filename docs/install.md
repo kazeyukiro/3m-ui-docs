@@ -141,3 +141,32 @@ docker compose up -d
 ```
 
 默认绑定与卷权限以主仓库 `docker-compose.yml` 为准。挂载目录需保证容器运行用户可读写。
+
+
+## 更新通道（stable / pre）
+
+```bash
+# 查看当前通道
+sudo 3m-ui channel
+
+# 切换到测试通道（滚动标签 pre）
+sudo 3m-ui channel pre
+# 切换并立即更新
+sudo 3m-ui channel pre --update
+
+# 回到正式通道
+sudo 3m-ui channel stable
+sudo 3m-ui update
+```
+
+等价环境变量（旧写法仍可用）：
+
+```bash
+sudo THREE_M_UI_CHANNEL=pre 3m-ui update
+```
+
+通道保存在 `/usr/local/lib/3m-ui/CHANNEL`。详见 [测试通道](/dev-channel)。
+
+## 管理脚本能力摘要
+
+`sudo 3m-ui` 菜单或子命令还包括：状态/启停、日志、改端口、`public_url`、web_path/sub_path、重置管理员、健康检查、BBR、Geo、防火墙提示、SSL 证书命令助手、备份、更新本管理脚本等。完整列表：`sudo 3m-ui help`。
